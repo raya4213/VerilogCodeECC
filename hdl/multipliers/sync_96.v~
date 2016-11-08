@@ -1,0 +1,35 @@
+`timescale 1ns / 1ps
+	
+module sync_ks_96(  
+	 input       clk,                          
+	 input	[95:0] a,                                  // O6 351
+	 input	[95:0] b,                                   // O5 &O6 366
+	 output reg [190:0] d
+	 );
+	
+	reg  [95:0]  A1,B1;
+	wire [190:0] C1;
+
+	always @(posedge clk)begin
+		A1 <= a;
+		B1 <= b;
+		d  <= C1;
+		
+	end
+
+mul_96_module_Xor mul_96(                              //717 slices on implementation
+	 .A(A1),                                  // O6 35
+	 .B(B1),                                   // O5 &O6 366
+	 .mul_96(C1)
+	 );
+
+
+initial begin
+$dumpfile("test.vcd");
+$dumpvars();
+end
+
+endmodule
+
+
+

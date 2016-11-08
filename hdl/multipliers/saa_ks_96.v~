@@ -1,0 +1,179 @@
+`timescale 1ns / 1ps
+//////////////////////////////////////////////////////////////////////////////////
+// Company: 
+// Engineer: 
+// 
+// Create Date:    09:27:55 07/28/2014 
+// Design Name: 
+// Module Name:    bit_3_karatsuba_testing 
+// Project Name: 
+// Target Devices: 
+// Tool versions: 
+// Description: 
+//
+// Dependencies: 
+//
+// Revision: 
+// Revision 0.01 - File Created
+// Additional Comments: 
+//
+//////////////////////////////////////////////////////////////////////////////////
+	module mul_6_shift(                    //15 lut on implement
+		input[5:0] A_6,                         
+		input[5:0] B_6,
+		output[11:0] C_6
+    );
+	 
+		wire[11:0] d,d1,d4,d5,d3,d2;
+
+		assign d[5:0]=A_6[5:0];
+		assign d[11:6]=46'b0;
+		assign d1=B_6[0]?d:11'b0;
+		assign d2=B_6[1]?d1^d<<1:d1;
+		assign d3=B_6[2]?d2^d<<2:d2; 
+		assign d4=B_6[3]?d3^d<<3:d3;
+		assign d5=B_6[4]?d4^d<<4:d4;  
+		assign C_6[11:0]=B_6[5]?d5^d<<5:d5; 
+
+
+	endmodule
+	
+	
+	module mul_12_module_Xor(                              //63 slices on implementation
+		 input[11:0] A,
+		 input[11:0] B,
+		 output[23:0] mul_12
+		 );
+		
+		wire[11:0] d0,d1,d2,d3;
+		
+		mul_6_shift mul_0(
+			(A[5:0]),
+			(B[5:0]),
+			(d0)
+			);
+
+		mul_6_shift mul_1(
+			(A[5:0]^A[11:6]),
+			(B[5:0]^B[11:6]),
+			(d1)
+			);
+
+		mul_6_shift mul_2(
+			A[11:6],
+			B[11:6],
+			(d2)
+			);
+		
+		assign mul_12[23:0]= {d2[11:6],d2[5:0]^d0[11:6]^d2[11:6]^d1[11:6],d0[11:6]^d0[5:0]^d2[5:0]^d1[5:0],d0[5:0]};
+
+	endmodule
+	
+	
+	
+	
+	module mul_24_module_Xor(                              //217 slices on implementation
+	                                                   //o5 &o6 114
+		 input[23:0] A,                                 //O6 103
+		 input[23:0] B,
+		 output[47:0] mul_24
+		 );
+		
+		wire[23:0] d0,d1,d2,d3;
+		
+		mul_12_module_Xor mul_0(
+			(A[11:0]),
+			(B[11:0]),
+			(d0)
+			);
+
+		mul_12_module_Xor mul_1(
+			(A[11:0]^A[23:12]),
+			(B[11:0]^B[23:12]),
+			(d1)
+			);
+
+		mul_12_module_Xor mul_2(
+			A[23:12],
+			B[23:12],
+			(d2)
+			);
+		
+		assign mul_24[47:0]= {d2[23:12],d2[11:0]^d2[23:12]^d0[23:12]^d1[23:12],d0[23:12]^d2[11:0]^d0[11:0]^d1[11:0],d0[11:0]};
+
+	endmodule
+	
+	
+	
+	
+	
+	
+	
+	module mul_48_module_Xor(                              //717 slices on implementation
+		 input[47:0] A,                                  // O6 351
+		 input[47:0] B,                                   // O5 &O6 366
+		 output[95:0] mul_48
+		 );
+		
+		wire[47:0] d0,d1,d2,d3;
+		
+		mul_24_module_Xor mul_0(
+			(A[23:0]),
+			(B[23:0]),
+			(d0)
+			);
+
+		mul_24_module_Xor mul_1(	
+			(A[23:0]^A[47:24]),
+			(B[23:0]^B[47:24]),
+			(d1)
+			);
+
+		mul_24_module_Xor mul_2(
+			A[47:24],
+			B[47:24],
+			(d2)
+			);
+		
+		assign mul_48[95:0]= {d2[47:24],d2[23:0]^d0[47:24]^d1[47:24]^d2[47:24],d0[47:24]^d0[23:0]^d2[23:0]^d1[23:0],d0[23:0]};
+
+	endmodule
+	
+	
+	
+	
+	
+	
+	module mul_96_module_Xor(                              //717 slices on implementation
+		 input[95:0] A,                                  // O6 351
+		 input[95:0] B,                                   // O5 &O6 366
+		 output[190:0] mul_96
+		 );
+		
+		wire[95:0] d0,d1,d2,d3;
+		
+		mul_48_module_Xor mul_0(
+			(A[47:0]),
+			(B[47:0]),
+			(d0)
+			);
+	
+		mul_48_module_Xor mul_1(	
+			(A[47:0]^A[95:48]),
+			(B[47:0]^B[95:48]),
+			(d1)
+			);
+
+		mul_48_module_Xor mul_2(
+			A[95:48],
+			B[95:48],
+			(d2)
+			);
+		
+	
+		assign mul_96[191:0]= {d2[95:48],d2[47:0]^d0[95:48]^d2[95:48]^d1[95:48],d0[95:48]^d0[47:0]^d1[47:0]^d2[47:0],d0[47:0]};
+
+	endmodule
+
+
+
