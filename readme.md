@@ -1,4 +1,4 @@
-This Repo contains the code of to my final year Undergrad project:
+This Repo contains the code of my final year Undergrad project:
 
 Its a Verilog Code that implemets 
 
